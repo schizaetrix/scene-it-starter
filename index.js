@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     document.getElementById('search-form').addEventListener('input', searchMovies)
     document.getElementById('search-form').addEventListener('submit', searchMovies)
+    document.addEventListener('DOMContentLoaded', saveToWatchlist)
 
     function searchMovies(search) {
         var searchString = search.target.value.toLowerCase()
@@ -32,7 +33,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <img class="card-img-top" src=${currentMovie.Poster}>
                 <div class="card-body">
                     <h5 class="card-title">${currentMovie.Title}<span class="badge badge-secondary">${currentMovie.Year}</span></h5>
-                    <a href="#" class="btn btn-primary">Add!</a>
+                    <button class="btn btn-primary" onclick="saveToWatchlist()">Save To Watchlist</button>
                 </div>
             </div>`
             return movieHTML
@@ -42,7 +43,21 @@ document.addEventListener('DOMContentLoaded', function() {
     }    
     var moviesFinalHTML = renderMovies(movieData)
 
-    document.getElementById('search-form').addEventListener('submit', function(e){
+    function saveToWatchlist (imdbID) {
+        var movie = movieData.find(function (currentMovie) {
+            return currentMovie.imdbID == imdbID
+        })
+        var watchlistJSON = localStorage.getItem('watchlist')
+        var watchlist = JSON.parse(watchlistJSON)
+        if (watchlist === null) {
+            watchlist = []
+        }
+        watchlist.push(movie)
+        watchlistJSON = JSON.stringify(watchlist)
+        localStorage.setItem('watchlist', watchlistJSON)
+    }
+
+    document.getElementById('search-form').addEventListener('submit', function(e) {
         e.preventDefault()
         $('#movies-container').html(moviesFinalHTML)
     }) 
